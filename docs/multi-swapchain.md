@@ -259,6 +259,11 @@ can be tested on its own.
   app has to register from a view controller instead (`registerSceneAccessory:` with
   `UISceneAccessory externalNonInteractiveSceneAccessoryWithConfiguration:`). We do both. Without a
   scene, iOS just mirrors. An AirPlay Apple TV 4K comes in at 3840x2160.
+- **Surface size:** by default the TV's layer gets at most 1920x1080 pixels, in the display's shape
+  (`LimitOutputSize`), and the system scales it up to fill the display. The game is rendered at the
+  internal resolution either way, so a 4K surface mostly adds the cost of filling it and of the post
+  shaders at 4K, and a 4K stream over AirPlay. Graphics → "External display resolution": "Up to 1080p"
+  (the default) or "Full resolution" (`iExternalDisplayResolution`, iOS only).
 - **Connect:** the delegate keeps the scene, and posts "external display available" (size from
   `screen.nativeBounds`, refresh rate, overscan) to the native side. It doesn't create a window yet.
 - **TV mode on:** when it should be active (setting on, `EmuScreen` running), the main thread creates

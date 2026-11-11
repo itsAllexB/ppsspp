@@ -21,6 +21,7 @@
 
 #include "Common/GPU/thin3d.h"
 #include "Common/Log.h"
+#include "Common/System/Display.h"
 #include "Common/System/NativeApp.h"
 #include "Core/Config.h"
 #include "Core/ConfigValues.h"
@@ -61,13 +62,24 @@ static bool g_launched = false;
 	[super viewDidLayoutSubviews];
 	UIScreen *screen = self.view.window.windowScene.screen;
 	const CGSize size = self.view.bounds.size;
-	const CGFloat scale = screen ? screen.nativeScale : 1.0;
-	self.view.contentScaleFactor = scale;
-	const int width = (int)(size.width * scale);
-	const int height = (int)(size.height * scale);
-	if (width <= 0 || height <= 0 || (width == width_ && height == height_)) {
+	const CGFloat nativeScale = screen ? screen.nativeScale : 1.0;
+	const int nativeWidth = (int)(size.width * nativeScale);
+	const int nativeHeight = (int)(size.height * nativeScale);
+	if (nativeWidth <= 0 || nativeHeight <= 0) {
 		return;
 	}
+	// The system scales the layer up to fill the display. A 4K surface costs four times the pixels of a
+	// 1080p one to draw, and to send over AirPlay, while the game itself is usually rendered at less.
+	int width = nativeWidth;
+	int height = nativeHeight;
+	if (g_Config.iExternalDisplayResolution == (int)ExternalDisplayResolution::UP_TO_1080P) {
+		LimitOutputSize(nativeWidth, nativeHeight, 1920 * 1080, &width, &height);
+	}
+	self.view.contentScaleFactor = nativeScale * width / nativeWidth;
+	if (width == width_ && height == height_) {
+		return;
+	}
+	INFO_LOG(Log::G3D, "External display: %dx%d points, %dx%d pixels, drawing %dx%d", (int)size.width, (int)size.height, nativeWidth, nativeHeight, width, height);
 	width_ = width;
 	height_ = height;
 	if (self.outputId) {

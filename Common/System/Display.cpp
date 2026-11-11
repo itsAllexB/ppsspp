@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
 #include <cstdio>
 
 #include "Common/System/Display.h"
@@ -19,6 +22,23 @@ std::string_view DeviceOrientationToString(DeviceOrientation orientation) {
 		return "Portrait";
 	default:
 		return "N/A";
+	}
+}
+
+void LimitOutputSize(int width, int height, int maxPixels, int *outWidth, int *outHeight) {
+	*outWidth = width;
+	*outHeight = height;
+	if (maxPixels <= 0 || width <= 0 || height <= 0 || (int64_t)width * height <= maxPixels) {
+		return;
+	}
+	const double scale = sqrt((double)maxPixels / ((double)width * height));
+	// Rounding can put an exact result like 1440 just below it, so allow a little before truncating,
+	// unless that goes over the limit.
+	*outWidth = std::max(1, (int)(width * scale + 0.0001));
+	*outHeight = std::max(1, (int)(height * scale + 0.0001));
+	if ((int64_t)*outWidth * *outHeight > maxPixels) {
+		*outWidth = std::max(1, (int)(width * scale));
+		*outHeight = std::max(1, (int)(height * scale));
 	}
 }
 

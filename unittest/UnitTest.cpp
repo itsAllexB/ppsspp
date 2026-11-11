@@ -81,6 +81,7 @@
 #include "Common/Input/InputState.h"
 #include "Common/Math/math_util.h"
 #include "Common/Render/DrawBuffer.h"
+#include "Common/System/Display.h"
 #include "Common/System/NativeApp.h"
 #include "Common/System/System.h"
 #include "Common/Thread/ThreadUtil.h"
@@ -4181,6 +4182,49 @@ static bool TestOverlayHole() {
 	return true;
 }
 
+static bool TestLimitOutputSize() {
+	const int max1080p = 1920 * 1080;
+	int w, h;
+	// At or below the limit, nothing changes.
+	LimitOutputSize(1920, 1080, max1080p, &w, &h);
+	EXPECT_EQ_INT(w, 1920);
+	EXPECT_EQ_INT(h, 1080);
+	LimitOutputSize(1280, 720, max1080p, &w, &h);
+	EXPECT_EQ_INT(w, 1280);
+	EXPECT_EQ_INT(h, 720);
+	// No limit.
+	LimitOutputSize(3840, 2160, 0, &w, &h);
+	EXPECT_EQ_INT(w, 3840);
+	EXPECT_EQ_INT(h, 2160);
+	// 4K comes down to 1080p, also upright.
+	LimitOutputSize(3840, 2160, max1080p, &w, &h);
+	EXPECT_EQ_INT(w, 1920);
+	EXPECT_EQ_INT(h, 1080);
+	LimitOutputSize(2160, 3840, max1080p, &w, &h);
+	EXPECT_EQ_INT(w, 1080);
+	EXPECT_EQ_INT(h, 1920);
+	// Other shapes keep their shape, with about as many pixels as 1080p.
+	LimitOutputSize(2048, 1536, max1080p, &w, &h);
+	EXPECT_EQ_INT(w, 1662);
+	EXPECT_EQ_INT(h, 1247);
+	LimitOutputSize(3440, 1440, max1080p, &w, &h);
+	EXPECT_EQ_INT(w, 2225);
+	EXPECT_EQ_INT(h, 931);
+	for (int width = 1000; width <= 8000; width += 7) {
+		for (int height = 600; height <= 4400; height += 13) {
+			LimitOutputSize(width, height, max1080p, &w, &h);
+			EXPECT_TRUE(w <= width && h <= height);
+			EXPECT_TRUE((int64_t)w * h <= max1080p);
+			if ((int64_t)width * height > max1080p) {
+				// Within a pixel of the original shape, and not much smaller than allowed.
+				EXPECT_TRUE(fabs((double)w / h - (double)width / height) * h <= (double)width / height + 1.0);
+				EXPECT_TRUE((int64_t)(w + 1) * (h + 1) > max1080p);
+			}
+		}
+	}
+	return true;
+}
+
 typedef bool (*TestFunc)();
 struct TestItem {
 	const char *name;
@@ -4818,6 +4862,7 @@ TestItem availableTests[] = {
 	TEST_ITEM(ShaderGenerators),
 	TEST_ITEM(Path),
 	TEST_ITEM(OverlayHole),
+	TEST_ITEM(LimitOutputSize),
 	TEST_ITEM(AndroidContentURI),
 	TEST_ITEM(Storage),
 	TEST_ITEM(AndroidContentURIMore),

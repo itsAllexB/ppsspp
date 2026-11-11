@@ -64,5 +64,10 @@ void RotateRectToDisplay(DisplayRect<int> &rect, int rtWidth, int rtHeight);
 // rotateToDisplay applies the primary display's rotation (Android's Vulkan pre-rotation). Not for other outputs.
 Lin::Matrix4x4 ComputeOrthoMatrix(float xres, float yres, CoordConvention coordConvention, bool rotateToDisplay = true);
 
+// Scales a size down, keeping its shape, so that it has at most maxPixels pixels. Smaller sizes, and a
+// maxPixels of 0 or less, are returned unchanged. For outputs like an external display, where a 4K
+// surface costs a lot more to fill and to send than a 1080p one, for little visible gain.
+void LimitOutputSize(int width, int height, int maxPixels, int *outWidth, int *outHeight);
+
 // Take this and run through translation. Returns "Portrait", "Landscape" or later "Square" (the latter being the square shape you get when you open a foldable phone).
 std::string_view DeviceOrientationToString(DeviceOrientation orientation);

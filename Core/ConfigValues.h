@@ -144,6 +144,13 @@ enum class ExternalDisplayMode {
 	MIRROR = 1,
 };
 
+// The size of the game's surface on an external display, where the platform lets us choose (iOS).
+// The system scales it up to fill the display.
+enum class ExternalDisplayResolution {
+	UP_TO_1080P = 0,  // No more pixels than 1920x1080, in the display's shape.
+	FULL = 1,  // The display's own resolution, like 3840x2160 for a 4K display.
+};
+
 enum class DepthRasterMode {
 	DEFAULT = 0,
 	LOW_QUALITY = 1,

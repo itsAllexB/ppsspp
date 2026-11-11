@@ -892,6 +892,7 @@ static int DefaultAnalogAltSpeedPercent() {
 }
 
 static constexpr const char *externalDisplayNames[] = { "Show the game", "Mirror the screen" };
+static constexpr const char *externalDisplayResolutionNames[] = { "Up to 1080p", "Full resolution" };
 static constexpr const char *gpuBackendNames[] = { "OpenGL", "Direct3D 9", "Direct3D 11", "Vulkan", "Metal" };
 static constexpr const char *internalResolutionNames[] = { "Auto (1:1)", "1x PSP", "2x PSP", "3x PSP", "4x PSP", "5x PSP", "6x PSP", "7x PSP", "8x PSP", "9x PSP", "10x PSP" };
 static constexpr const char *msaaLevelNames[] = { "Off", "2x", "4x", "8x", "16x" };
@@ -923,6 +924,8 @@ static constexpr ConfigSetting graphicsSettings[] = {
 		.Label(I18NCat::GRAPHICS, "Backend").Choices(gpuBackendNames),
 	ConfigSetting("ExternalDisplay", SETTING(g_Config, iExternalDisplay), (int)ExternalDisplayMode::SHOW_GAME, CfgFlag::DEFAULT)
 		.Label(I18NCat::GRAPHICS, "External display").Choices(externalDisplayNames),
+	ConfigSetting("ExternalDisplayResolution", SETTING(g_Config, iExternalDisplayResolution), (int)ExternalDisplayResolution::UP_TO_1080P, CfgFlag::DEFAULT)
+		.Label(I18NCat::GRAPHICS, "External display resolution").Choices(externalDisplayResolutionNames),
 #if PPSSPP_PLATFORM(ANDROID) && PPSSPP_ARCH(ARM64)
 	ConfigSetting("CustomDriver", SETTING(g_Config, sCustomDriver), "", CfgFlag::DEFAULT),
 	ConfigSetting("AdrenoDriverVars", SETTING(g_Config, iAdrenoEnvVars), 0, CfgFlag::DEFAULT),

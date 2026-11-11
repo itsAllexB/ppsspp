@@ -302,6 +302,7 @@ public:
 	// GFX
 	int iGPUBackend;
 	int iExternalDisplay;  // ExternalDisplayMode
+	int iExternalDisplayResolution;  // ExternalDisplayResolution
 	std::string sCustomDriver;
 	int iAdrenoEnvVars;  // AdrenoEnvVars
 	std::string sFailedGPUBackends;  // NOT stored in ppsspp.ini anymore!

@@ -290,7 +290,7 @@ enum class SystemNotification {
 	CONFIG_LOADED,
 	BEFORE_CONFIG_SAVE_ON_EXIT,
 	TOP_LEVEL_CHANGED,  // NativeIsAtTopLevel() changed. From the render thread.
-	EXTERNAL_DISPLAY_CHANGED,  // g_Config.iExternalDisplay changed.
+	EXTERNAL_DISPLAY_CHANGED,  // g_Config.iExternalDisplay or iExternalDisplayResolution changed.
 };
 
 // I guess it's not super great architecturally to centralize this, since it's not general - but same with a lot of

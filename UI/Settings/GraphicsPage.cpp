@@ -201,6 +201,18 @@ void BuildGraphicsSettings(SettingsPage *page) {
 		previous = g_Config.iExternalDisplay;
 		System_Notify(SystemNotification::EXTERNAL_DISPLAY_CHANGED);
 	});
+#if PPSSPP_PLATFORM(IOS)
+	page->Setting(&g_Config.iExternalDisplayResolution).EnabledFunc([host] {
+		Draw::DrawContext *draw = host->PageScreenManager()->getDrawContext();
+		return draw && draw->GetDeviceCaps().multipleSwapchains && g_Config.iExternalDisplay == (int)ExternalDisplayMode::SHOW_GAME;
+	}).OnChange([previous = g_Config.iExternalDisplayResolution](UI::EventParams &e) mutable {
+		if (g_Config.iExternalDisplayResolution == previous) {
+			return;
+		}
+		previous = g_Config.iExternalDisplayResolution;
+		System_Notify(SystemNotification::EXTERNAL_DISPLAY_CHANGED);
+	});
+#endif
 #endif
 
 	// Backends that don't allow a device choice will only expose one device.
